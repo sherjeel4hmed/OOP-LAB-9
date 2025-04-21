@@ -1,0 +1,131 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+class Doctor;
+class Billing;
+
+class PatientRecord
+{
+    string name;
+    string id;
+    string dob;
+    vector<string> medical_history;
+    vector<string> current_treatments;
+    vector<string> billing;
+
+public:
+    PatientRecord(string n, string i, string d): name(n), id(i), dob(d) {}
+
+    string getPublicData(){
+        return "Name: "+ name + "\n" + "ID: " + id;
+    } 
+
+private:
+    string getMedicalhistory(){
+        string result = "Medical History:\n";
+        for(string h : medical_history) result += "- " + h + "\n";
+        result += "Current Treatments:\n";
+        for(string t : current_treatments) result += "- " + t + "\n";
+        return result;
+    }
+
+    void updateMedicalhistory(string h){
+        medical_history.push_back(h);
+    }
+
+    void addTreatment(string t){
+        current_treatments.push_back(t);
+    }
+
+    void addBillingDetails(string b){
+        billing.push_back(b);
+    }
+
+    string getBillingData(){
+        string result = "Billing Records:\n";
+        for(int i = 0; i < billing.size(); i++) result += "- " + billing[i] + "\n";
+        return result;
+    }
+
+    friend class Doctor;
+    friend class Billing;
+};
+
+class Doctor
+{
+public:
+    void updateMedicalHistory(PatientRecord &p, string history){
+        p.updateMedicalhistory(history);
+    }
+
+    void addTreatment(PatientRecord &p, string treatment){
+        p.addTreatment(treatment);
+    }
+
+    void viewMedicalHistory(PatientRecord &p){
+        cout << p.getMedicalhistory();
+    }
+};
+
+class Billing
+{
+public:
+    void addBill(PatientRecord &p, string bill){
+        p.addBillingDetails(bill);
+    }
+
+    void viewBilling(PatientRecord &p){
+        cout << p.getBillingData();
+    }
+};
+
+class Receptionist
+{
+public:
+    void viewPublicData(PatientRecord &p){
+        cout << p.getPublicData() << endl;
+    }
+
+    // void addBill(PatientRecord &p, string bill){
+    //     p.addBillingDetails(bill); // unauthorized
+    // }
+
+    // void updateMedicalHistory(PatientRecord &p, string h){
+    //     p.updateMedicalhistory(h); // unauthorized
+    // }
+
+    // void viewMedical(PatientRecord &p){
+    //     cout << p.getMedicalhistory(); // unauthorized
+    // }
+};
+
+int main()
+{
+    PatientRecord p("BOI", "12345", "1990-03-03");
+    Doctor d;
+    Billing b;
+    Receptionist r;
+
+    d.updateMedicalHistory(p, "Diabetes");
+    d.addTreatment(p, "Insulin Therapy");
+
+    b.addBill(p, "Consultation Fee: $100");
+    b.addBill(p, "Insulin Injection: $50");
+
+    cout << "--- Doctor Views Medical History ---" << endl;
+    d.viewMedicalHistory(p);
+
+    cout << "--- Billing Views Billing Info ---" << endl;
+    b.viewBilling(p);
+
+    cout << "--- Receptionist Views Public Info ---" << endl;
+    r.viewPublicData(p);
+
+    // The following lines are commented because they would be unauthorized access:
+    // r.addBill(p, "Unauthorized Bill");
+    // r.updateMedicalHistory(p, "Fake History");
+    // r.viewMedical(p);
+
+    return 0;
+}
