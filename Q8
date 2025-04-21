@@ -1,0 +1,67 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+class Student {
+protected:
+    string name;
+public:
+    Student(string n) : name(n) {}
+
+    virtual double getTuition(string status, int creditHours) = 0; // Pure virtual function
+
+    string getName() const {
+        return name;
+    }
+
+    virtual ~Student() {}
+};
+
+
+class GraduateStudent : public Student {
+private:
+    string researchTopic;
+
+public:
+    GraduateStudent(string n, string topic = "") : Student(n), researchTopic(topic) {}
+
+    void setResearchTopic(const string& topic) {
+        researchTopic = topic;
+    }
+
+    string getResearchTopic() const {
+        return researchTopic;
+    }
+
+    double getTuition(string status, int creditHours) override {
+        if (status == "undergraduate") {
+            return 200.0 * creditHours;
+        } else if (status == "graduate") {
+            return 300.0 * creditHours;
+        } else if (status == "doctoral") {
+            return 400.0 * creditHours;
+        } else {
+            cout << "Invalid status provided." << endl;
+            return 0.0;
+        }
+    }
+};
+
+int main() {
+    GraduateStudent gs("Sharjeel", "Computer Science");
+
+    string status;
+    int credits;
+
+    cout << "Enter student status (undergraduate / graduate / doctoral): ";
+    cin >> status;
+
+    cout << "Enter credit hours: ";
+    cin >> credits;
+
+    cout << "Name: " << gs.getName() << endl;
+    cout << "Research Topic: " << gs.getResearchTopic() << endl;
+    cout << "Tuition Fee: $" << gs.getTuition(status, credits) << endl;
+
+    return 0;
+}
