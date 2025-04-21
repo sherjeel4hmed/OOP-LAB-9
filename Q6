@@ -1,0 +1,66 @@
+#include<iostream>
+using namespace std;
+
+
+class Car {
+protected:
+    int model;
+    double price;
+    string name;
+public:
+    Car(int m, double p, string n) : model(m), price(p), name(n) {}
+
+    virtual void setPrice(double d) = 0; 
+
+    int getModel() { return model; }
+    double getPrice() { return price; }
+    string getName() { return name; }
+};
+
+
+class Color : public Car {
+    string color;
+public:
+    Color(int m, double p, string n, string c) : Car(m, p, n), color(c) {}
+
+    void setPrice(double d) override {
+        price = d;
+    }
+
+    string getColor() { return color; }
+};
+
+class Company : public Car {
+    string company;
+public:
+    Company(int m, double p, string n, string c) : Car(m, p, n), company(c) {}
+
+    void setPrice(double d) override {
+        price = d;
+    }
+
+    string getCompany() { return company; }
+};
+
+
+int main() {
+    Color c1(2022, 25000, "Civic", "Red");
+    c1.setPrice(270000);
+
+    Company c2(2023, 30000, "Corolla", "Toyota");
+    c2.setPrice(310000);
+
+    cout << "--- Color Car Info ---" << endl;
+    cout << "Model: " << c1.getModel() << endl;
+    cout << "Name: " << c1.getName() << endl;
+    cout << "Color: " << c1.getColor() << endl;
+    cout << "Price: $" << c1.getPrice() << endl;
+
+    cout << "\n--- Company Car Info ---" << endl;
+    cout << "Model: " << c2.getModel() << endl;
+    cout << "Name: " << c2.getName() << endl;
+    cout << "Company: " << c2.getCompany() << endl;
+    cout << "Price: $" << c2.getPrice() << endl;
+
+    return 0;
+}
