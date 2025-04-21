@@ -1,0 +1,85 @@
+#include<iostream>
+using namespace std;
+
+class Wallet {
+    double balance;
+    double deposit;
+    double withdraw;
+    const double maxdeposit = 50000;
+    const double maxwithdraw = 25000;
+
+public:
+    Wallet(double b): balance(b), deposit(0), withdraw(0) {}
+
+    void depositAmount(double b) {
+        if (b <= 0) {
+            cout << "Incorrect deposit amount" << endl;
+            return;
+        }
+        if (deposit + b > maxdeposit) {
+            cout << "Deposit exceeds daily limit of " << maxdeposit << "!" << endl;
+            return;
+        }
+        balance += b;
+        deposit += b;
+        cout << "Deposit successful" << endl;
+        display();
+    }
+
+    void withdrawAmount(double b) {
+        if (b <= 0) {
+            cout << "Incorrect amount" << endl;
+            return;
+        }
+        if (b > balance) {
+            cout << "Insufficient Balance" << endl;
+            return;
+        }
+        if (withdraw + b > maxwithdraw) {
+            cout << "Withdrawal exceeds daily limit of " << maxwithdraw << "!" << endl;
+            return;
+        }
+        balance -= b;
+        withdraw += b;
+        cout << "Withdrawal successful" << endl;
+        display();
+    }
+
+    void display() {
+        cout << "Balance: " << balance << endl;
+    }
+};
+
+class User {
+    string id;
+    string name;
+    Wallet w;
+
+public:
+    User(string id, string n, double b): id(id), name(n), w(b) {}
+
+    void deposit(double b) {
+        w.depositAmount(b);
+    }
+
+    void withdraw(double b) {
+        w.withdrawAmount(b);
+    }
+};
+
+int main() {
+    User u1("U001", "Ali", 1000);
+    User u2("U002", "Sara", 500);
+
+    u1.deposit(2000);
+    u1.deposit(3500);
+    u1.withdraw(800);
+    u1.withdraw(250000);
+
+    cout << endl;
+
+    u2.deposit(3000);
+    u2.withdraw(1000);
+
+    return 0;
+}
