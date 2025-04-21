@@ -1,0 +1,98 @@
+#include <iostream>
+using namespace std;
+
+class person {
+public:
+    virtual void getdata() {}
+    virtual void displaydata() {}
+    virtual void bonus() {}
+    virtual ~person() {}
+};
+
+class admin : public virtual person {
+public:
+    void getdata() override {
+        cout << "Enter admin salary: ";
+        cin >> salary;
+    }
+    void displaydata() override {
+        cout << "Admin salary: " << salary << endl;
+    }
+    void bonus() override {
+        cout << "Admin bonus: " << salary * 0.1 << endl;
+    }
+protected:
+    float salary;
+};
+
+class account : public virtual person {
+public:
+    void getdata() override {
+        cout << "Enter account salary: ";
+        cin >> salary;
+    }
+    void displaydata() override {
+        cout << "Account salary: " << salary << endl;
+    }
+    void bonus() override {
+        cout << "Account bonus: " << salary * 0.05 << endl;
+    }
+protected:
+    float salary;
+};
+
+class master : public admin, public account {
+public:
+    void getdata() override {
+        cout << "Enter master salary: ";
+        cin >> salary;
+    }
+    void displaydata() override {
+        cout << "Master salary: " << salary << endl;
+    }
+    void bonus() override {
+        cout << "Master bonus: " << salary * 0.15 << endl;
+    }
+private:
+    float salary;
+};
+
+int main() {
+    person* p;
+    int choice;
+    
+    while(true) {
+        cout << "\n1. Admin\n2. Account\n3. Master\n4. Exit\nEnter choice: ";
+        cin >> choice;
+        
+        if(choice == 1) {
+            admin a;
+            p = &a;
+            p->getdata();
+            p->displaydata();
+            p->bonus();
+        }
+        else if(choice == 2) {
+            account ac;
+            p = &ac;
+            p->getdata();
+            p->displaydata();
+            p->bonus();
+        }
+        else if(choice == 3) {
+            master m;
+            p = &m;
+            p->getdata();
+            p->displaydata();
+            p->bonus();
+        }
+        else if(choice == 4) {
+            break;
+        }
+        else {
+            cout << "Invalid choice!" << endl;
+        }
+    }
+    
+    return 0;
+}
