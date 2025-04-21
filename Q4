@@ -1,0 +1,139 @@
+#include <iostream>
+using namespace std;
+
+class Flight; 
+class Passenger
+{
+    string id;
+    string name;
+
+public:
+    Passenger(string id, string name) : id(id), name(name) {}
+
+    void requestBooking(Flight &f);
+
+    string getID() { return id; }
+    string getName() { return name; }
+};
+
+class Flight
+{
+    string flightNumber;
+    string departure;
+    string arrival;
+    const int capacity = 100;
+    int bookedCount;
+    string *passengerID;
+    string *passengerName;
+
+public:
+    Flight(string fn, string d, string a)
+        : flightNumber(fn), departure(d), arrival(a), bookedCount(0)
+    {
+        passengerID = new string[capacity];
+        passengerName = new string[capacity];
+    }
+
+    ~Flight()
+    {
+        delete[] passengerID;
+        delete[] passengerName;
+    }
+
+    bool bookSeat(Passenger &p, int seatsToBook)
+    {
+        if (bookedCount + seatsToBook > capacity)
+        {
+            cout << "Cannot book " << seatsToBook << " seats. Only "<< (capacity - bookedCount) << " available.\n";
+            return false;
+        }
+
+        for (int i = 0; i < seatsToBook; i++)
+        {
+            passengerID[bookedCount] = p.getID();
+            passengerName[bookedCount] = p.getName();
+            bookedCount++;
+        }
+
+        return true;
+    }
+
+    bool cancelSeat(Passenger &p)
+    {
+        bool found = false;
+        for (int i = 0; i < bookedCount;)
+        {
+            if (passengerID[i] == p.getID())
+            {
+                for (int j = i; j < bookedCount - 1; j++)
+                {
+                    passengerID[j] = passengerID[j + 1];
+                    passengerName[j] = passengerName[j + 1];
+                }
+                bookedCount--;
+                found = true;
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        if (found)
+        {
+            cout << "All seats cancelled for " << p.getName() << ".\n";
+            return true;
+        }
+        else
+        {
+            cout << "No seat found to cancel for " << p.getName() << ".\n";
+            return false;
+        }
+    }
+
+    void showFlightStatus()
+    {
+        cout << "\nFlight: " << flightNumber << " (" << departure << " → " << arrival << ")\n";
+        cout << "Total Booked Seats: " << bookedCount << "\n";
+        for (int i = 0; i < bookedCount; i++)
+        {
+            cout << "  Seat " << i + 1 << ": " << passengerName[i] << " (" << passengerID[i] << ")\n";
+        }
+    }
+};
+
+void Passenger::requestBooking(Flight &f)
+{
+    int numberOfSeats;
+    cout << "How many seats would you like to book, " << name << "? ";
+    cin >> numberOfSeats;
+
+    if (f.bookSeat(*this, numberOfSeats))
+    {
+        cout << numberOfSeats << " seat(s) booked for " << name << ".\n";
+    }
+    else
+    {
+        cout << "Booking failed for " << name << ".\n";
+    }
+}
+
+int main()
+{
+    Flight flight1("12345", "Lahore", "Karachi");
+
+    Passenger p1("1234", "Naeem");
+    Passenger p2("1233", "Sharjeel");
+
+    p1.requestBooking(flight1);
+    p2.requestBooking(flight1);
+
+    flight1.showFlightStatus();
+
+    cout << "\nCancelling Sara's seats...\n";
+    flight1.cancelSeat(p2);
+
+    flight1.showFlightStatus();
+
+    return 0;
+}
