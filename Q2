@@ -1,0 +1,84 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Logger {
+private:
+    static const int MAX_LOGS = 1000;
+    vector<string> logMessages;
+
+    string formatMessage(const string& severity, const string& module, const string& message) {
+        return "[" + severity + "] [" + module + "] " + message;
+    }
+
+    void storeMessage(const string& formattedMessage) {
+        if (logMessages.size() >= MAX_LOGS) {
+            logMessages.erase(logMessages.begin()); 
+        }
+        logMessages.push_back(formattedMessage);
+    }
+
+public:
+    void logInfo(const string& module, const string& message) {
+        storeMessage(formatMessage("INFO", module, message));
+    }
+
+    void logWarning(const string& module, const string& message) {
+        storeMessage(formatMessage("WARN", module, message));
+    }
+
+    void logError(const string& module, const string& message) {
+        storeMessage(formatMessage("ERROR", module, message));
+    }
+
+    friend class Auditor;
+};
+
+class Auditor {
+private:
+    string password;
+public:
+    Auditor(const string& pwd) {
+        password = pwd;
+    }
+
+    vector<string> retrieveLogs(Logger& logger, const string& providedPwd) {
+        if (providedPwd == password) {
+            return logger.logMessages;
+        }
+        return vector<string>(); 
+    }
+};
+
+int main() {
+    Logger logger;
+
+    logger.logInfo("Network Module", "Connection established");
+    logger.logWarning("Database Module", "Query took too long");
+    logger.logError("Authentication Module", "Invalid login attempt");
+    logger.logInfo("UI Module", "User clicked button");
+
+    Auditor auditor("securepass");
+
+    vector<string> logs = auditor.retrieveLogs(logger, "securepass");
+    cout << "\nRetrieved Logs:\n";
+    for (int i = 0; i < logs.size(); ++i) {
+        cout << logs[i] << endl;
+    }
+
+    // Simulate log limit
+    for (int i = 0; i < 1000; ++i) {
+        logger.logInfo("Stress Module", "Message " + to_string(i));
+    }
+    logger.logError("Overload Module", "Log limit tested");
+
+    vector<string> latestLogs = auditor.retrieveLogs(logger, "securepass");
+    cout << "\nAfter hitting limit, latest logs:\n";
+    for (int i = latestLogs.size() - 5; i < latestLogs.size(); ++i) {
+        cout << latestLogs[i] << endl;
+    }
+
+    return 0;
+}
